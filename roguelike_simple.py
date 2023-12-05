@@ -1,28 +1,3 @@
-try:
-	import curses
-except:	
-	print("The builtin curses module is not supported on Windows.")
-	print("However, you can install the windows-curses module in order to play on Windows.")
-	while True:
-		print("Would you like to install windows-curses? (Y/N)")
-		choice = input(">> ")
-		if choice:
-			c = choice[0].lower()
-			if c == "y":
-				print("Beginning installation...")
-				import subprocess
-				code = subprocess.call(["pip", "install", "windows-curses"])
-				if code:
-					print("Failed to install windows-curses.")
-					exit(code)
-				break
-			elif c == "n":
-				exit()
-			else:
-				print("Please enter Y or N")
-	import curses
-	os.system("cls" if os.name == "nt" else "clear")
-	
 import random, time
 import math
 from collections import deque
@@ -30,17 +5,15 @@ from os import get_terminal_size
 
 from utils import *
 from board import *	
-from gameobj import *					
+from gameobj_simple import *					
 from entity import *
 from items import *
 from monster import *
 
 if __name__ == "__main__":
-	#random.seed(100)#fix map and monsters
-	g = Game()
+	random.seed(100)#fix map and monsters
+	g = GameSimple()
 	try:
-		g.print_msg("Welcome to VeraDugeon Rogue v0.5")
-		g.print_msg("Press \"?\" if you want to view the controls.")
 		if g.has_saved_game():
 			g.maybe_load_game()	
 		if not g.has_saved_game(): #Either it failed to load or the player decided to start a new game
@@ -55,24 +28,24 @@ if __name__ == "__main__":
 			refresh = False
 			lastenergy = player.energy
 			if player.resting:
-				g.screen.nodelay(True)
-				char = g.screen.getch()
+				#g.screen.nodelay(True)
+				char = console_getch()
 				done = False
 				if char != -1 and chr(char) == "r":
-					g.screen.nodelay(False)
+					#g.screen.nodelay(False)
 					if g.yes_no("Really cancel your rest?"):
 						done = True
 						g.print_msg("You stop resting.")
 					else:
 						g.print_msg("You continue resting.")
-						g.screen.nodelay(True)
+						#g.screen.nodelay(True)
 				time.sleep(0.005)
 				player.energy = 0
 				if not done and player.HP >= player.get_max_hp():
 					g.print_msg("HP restored.", "green")
 					done = True
 				if done:
-					g.screen.nodelay(False)
+					#g.screen.nodelay(False)
 					g.player.resting = False
 					player.energy = random.randint(1, player.get_speed())
 					refresh = True
@@ -88,9 +61,10 @@ if __name__ == "__main__":
 					player.energy = random.randint(1, player.get_speed())
 					g.save_game()
 			else:
-				g.screen.nodelay(False)
-				curses.flushinp()
-				char = chr(g.screen.getch())
+				#g.screen.nodelay(False)
+				#curses.flushinp()
+				#char = chr(g.screen.getch())
+				char = chr(console_getch())
 				if char == "w":
 					player.move(0, -1)
 				elif char == "s":
@@ -211,8 +185,8 @@ if __name__ == "__main__":
 				elif char == "Q": #Quit
 					if g.yes_no("Are you sure you want to quit the game?"):
 						g.save_game()
-						curses.nocbreak()
-						curses.echo()
+						#curses.nocbreak()
+						#curses.echo()
 						exit()
 				elif char == "+": #Display worn rings
 					if player.worn_rings:
@@ -240,9 +214,9 @@ if __name__ == "__main__":
 		g.input("Press enter to continue...")
 		g.game_over()
 	except Exception as e:
-		curses.nocbreak()
-		curses.echo()
-		curses.endwin()
+		#curses.nocbreak()
+		#curses.echo()
+		#curses.endwin()
 		import os, traceback
 		os.system("clear")
 		print("An error has occured:")
@@ -259,12 +233,13 @@ if __name__ == "__main__":
 		except:
 			pass
 	except KeyboardInterrupt:
-		curses.nocbreak()
-		curses.echo()
-		curses.endwin()
+		#curses.nocbreak()
+		#curses.echo()
+		#curses.endwin()
 		import os
 		os.system("cls" if os.name == "nt" else "clear")
 		raise
 	else:
-		curses.nocbreak()
-		curses.echo()
+		#curses.nocbreak()
+		#curses.echo()
+		pass
